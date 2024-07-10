@@ -13,7 +13,7 @@
 
     <template v-if="ratingsStatistics.applicantsCount > departmentRatings.quota">
       <p>Минимальный проходной балл: {{ ratingsStatistics.passedMinExamsScore }}</p>
-      <p>Средний балл среди тех кто прошёл: {{ ratingsStatistics.passedMinExamsScore }}</p>
+      <p>Средний балл среди тех кто прошёл: {{ ratingsStatistics.passedAverageExamsScore }}</p>
     </template>
 
     <p>Квота: {{ departmentRatings.quota }}</p>
