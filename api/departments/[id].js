@@ -77,6 +77,9 @@ const parseApplications = htmlString => {
     })
   }
 
+  // remove first element which is the header of the table
+  applications.shift()
+
   return applications
 }
 
@@ -117,7 +120,7 @@ export async function GET(request) {
     const htmlString = await fetchDepartmentStatistics(departmentId)
     const department = parseDepartmentStatistics({ htmlString, departmentId })
 
-    return new Response(JSON.stringify(department))
+    return new Response(JSON.stringify(department), { status: 200, headers: { 'Content-Type': 'application/json' } })
 
   } catch (error) {
     const errorOptions = {
