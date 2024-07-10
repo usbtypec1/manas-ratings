@@ -5,6 +5,21 @@
     </RouterLink>
     <Button :loading="isLoading" label="Обновить" @click="loadDepartmentRatings" style="margin-left: 0.5rem"/>
   </div>
+
+  <div v-if="!isLoading">
+    <p>Минимальный балл: {{ ratingsStatistics.minExamsScore }}</p>
+    <p>Максимальный балл: {{ ratingsStatistics.maxExamsScore }}</p>
+    <p>Общий средний балл : {{ ratingsStatistics.averageExamsScore }}</p>
+
+    <template v-if="ratingsStatistics.applicantsCount > departmentRatings.quota">
+      <p>Минимальный проходной балл: {{ ratingsStatistics.passedMinExamsScore }}</p>
+      <p>Средний балл среди тех кто прошёл: {{ ratingsStatistics.passedMinExamsScore }}</p>
+    </template>
+
+    <p>Квота: {{ departmentRatings.quota }}</p>
+    <p>Подалось абитуриентов: {{ ratingsStatistics.applicantsCount }}</p>
+
+  </div>
   <DataTable v-if="!isLoading" :value="departmentRatings.ratings">
     <template #header>
       <h2>{{ departmentRatings.faculty_name }}</h2>
@@ -33,12 +48,45 @@
 
 <script setup>
 import Button from 'primevue/button'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import Image from 'primevue/image'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import ProgressSpinner from 'primevue/progressspinner'
+
+const computeAverage = (numbers) => {
+  const average = numbers.reduce((sum, num) => sum + num, 0) / numbers.length
+  return Math.round((average + Number.EPSILON) * 100) / 100
+}
+
+
+const ratingsStatistics = computed(() => {
+  const { ratings = [] } = departmentRatings.value
+
+  const passedApplicants = ratings.filter(({ is_passed }) => is_passed)
+
+  const applicantsCount = ratings.length
+
+  const allExamScores = ratings.map(rating => rating.exams_score)
+  const passedExamScores = passedApplicants.map(rating => rating.exams_score)
+
+  const minExamsScore = Math.min(...allExamScores)
+  const maxExamsScore = Math.max(...allExamScores)
+  const averageExamsScore = computeAverage(allExamScores)
+
+  const passedMinExamsScore = Math.min(...passedExamScores)
+  const passedAverageExamsScore = computeAverage(passedExamScores)
+
+  return {
+    applicantsCount,
+    minExamsScore,
+    maxExamsScore,
+    averageExamsScore,
+    passedMinExamsScore,
+    passedAverageExamsScore,
+  }
+})
 
 const buildPhotoUrl = applicantId => `https://abiturient.manas.edu.kg/page/uploads/photo/${applicantId}.jpg`
 
