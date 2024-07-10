@@ -1,7 +1,7 @@
 {
   "name": "vite",
   "version": "0.0.0",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -9,6 +9,9 @@
   },
   "dependencies": {
     "@primevue/themes": "^4.0.0",
+    "axios": "^1.7.2",
+    "cheerio": "^1.0.0-rc.12",
+    "dayjs": "^1.11.11",
     "primevue": "^4.0.0",
     "vue": "^3.2.45",
     "vue-router": "^4.4.0"
