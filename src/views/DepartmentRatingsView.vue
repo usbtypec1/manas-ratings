@@ -36,7 +36,6 @@ import { getDepartmentRatings } from '../services/api'
 import DepartmentApplicationsTable from '../components/DepartmentApplicationsTable.vue'
 import DepartmentApplicationsStatistics from '../components/DepartmentApplicationsStatistics.vue'
 
-
 const route = useRoute()
 
 const isLoading = ref(false)

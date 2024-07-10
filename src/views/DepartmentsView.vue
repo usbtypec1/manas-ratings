@@ -1,7 +1,7 @@
 <template>
-  <div v-for="{ id, name } in departments" :key="id">
+  <div v-for="{ id, name } in departments.sort((a, b) => a.name.localeCompare(b.name))" :key="id">
     <RouterLink :to="{ name: 'department', params: { id }}">
-      <Button severity="secondary" :label="name" style="margin-bottom: 1rem" />
+      <Button link :label="name" style="margin-bottom: 1rem" />
     </RouterLink>
   </div>
 </template>
