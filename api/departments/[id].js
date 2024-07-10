@@ -1,10 +1,5 @@
-const cheerio = require('cheerio')
-const axios = require('axios')
-const dayjs = require('dayjs')
-const customParseFormat = require('dayjs/plugin/customParseFormat')
-
-
-dayjs.extend(customParseFormat)
+import * as cheerio from 'cheerio'
+import axios from 'axios'
 
 
 const capitalizeFirstLetter = text => text.charAt(0).toUpperCase() + text.slice(1)
@@ -45,6 +40,12 @@ const parseQuota = htmlString => {
   return quota
 }
 
+const formatDate = dateString => {
+  const [datePart, timePart] = dateString.split(' ')
+  const [day, month, year] = datePart.split('/')
+  return `${year}-${month}-${day}T${timePart}+06:00`
+}
+
 const parseApplications = htmlString => {
   const applications = []
 
@@ -64,7 +65,7 @@ const parseApplications = htmlString => {
     const applicantId = applicantIdTd.text()
     const primaryScore = Number(primaryScoreTd.text())
     const secondaryScore = Number(secondaryScoreTd.text())
-    const createdAt = dayjs(createdAtTd.text(), 'DD/MM/YYYY HH:mm:ss').format('YYYY-MM-DDTHH:mm:ss+06:00')
+    const createdAt = formatDate(createdAtTd.text())
 
     applications.push({
       rating,
@@ -87,6 +88,7 @@ const fetchDepartmentStatistics = async (departmentId) => {
     const response = await axios.get(url)
     return response.data
   } catch (error) {
+    console.error(error)
     if (error.response.status !== 200) {
       throw new Error('Failed to fetch department')
     }
