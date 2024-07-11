@@ -17,7 +17,7 @@ const departmentIds = [
 export async function GET(request) {
   try {
     const departmentsRatings = await getDepartmentsRatings(departmentIds)
-    return new Response(JSON.stringify({ departmentsRatings }), {
+    return new Response(JSON.stringify(departmentsRatings), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',

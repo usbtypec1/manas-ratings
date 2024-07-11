@@ -2,9 +2,10 @@
   <h2>Улучшенный (неофициальный) рейтинг абитуриентов университета Манас</h2>
   <h3>Наш чат в Telegram - <a href="https://t.me/studmanas" target="_blank">@studmanas</a></h3>
   <h3>Разработчик - <a href="https://github.com/usbtypec1" target="_blank">@usbtypec</a></h3>
+  <p v-if="facultiesDepartmentsStatistics">Чтобы просмотреть баллы конкретного направления, нажмите на название</p>
   <DataTable
-    v-for="{ facultyName, departments } in data"
-    v-if="!isLoading"
+    v-for="{ facultyName, departments } in facultiesDepartmentsStatistics"
+    v-if="facultiesDepartmentsStatistics"
     :value="departments"
     striped-rows
     style="margin-bottom: 4rem"
@@ -27,52 +28,36 @@
     <Column field="statistics.quota" header="Квота" sortable/>
     <Column field="statistics.applicationsCount" header="Кол-во абитуриентов" sortable/>
   </DataTable>
-  <ProgressSpinner v-if="isLoading"/>
+  <ProgressSpinner v-if="isLoading && !facultiesDepartmentsStatistics"/>
 </template>
 
 <script setup>
-import facultiesDepartments from '../facultiesDepartments.json'
 import { RouterLink } from 'vue-router'
 import { getAllDepartmentsRatings } from '../services/api/all-departments-ratings.js'
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import ProgressSpinner from 'primevue/progressspinner'
-import { computeApplicationsStatistics } from '../services/statistics.js'
+import { useDepartmentsStatisticsStore } from '../stores/departmentsStatistics.js'
+import { useTimeoutFn } from '@vueuse/core'
+import { storeToRefs } from 'pinia'
 
-const departmentIdToStatistics = ref(undefined)
 const isError = ref(false)
 const isLoading = ref(false)
 
-const data = computed(() => {
-  return facultiesDepartments.map(({ facultyName, departments }) => {
-    const departmentsWithStatistics = departments.map(department => {
-      const statistics = departmentIdToStatistics.value?.[department.id]
-      return {
-        ...department,
-        statistics,
-      }
-    })
-    return {
-      facultyName,
-      departments: departmentsWithStatistics,
-    }
-  })
-})
+const departmentsStatisticsStore = useDepartmentsStatisticsStore()
+const {
+  facultiesDepartmentsStatistics,
+  departmentsRatings,
+} = storeToRefs(departmentsStatisticsStore)
+
+const { setDepartmentsRatings } = departmentsStatisticsStore
 
 const loadDepartments = async () => {
   isLoading.value = true
   try {
     const data = await getAllDepartmentsRatings()
-
-    const result = {}
-    for (const departmentStatistics of data?.departmentsRatings) {
-      result[departmentStatistics.departmentId] = {
-        ...computeApplicationsStatistics(departmentStatistics.applications),
-        quota: departmentStatistics.quota,
-      }
-    }
-    departmentIdToStatistics.value = result
+    setDepartmentsRatings?.(data)
 
   } catch (error) {
     isError.value = true
@@ -80,5 +65,16 @@ const loadDepartments = async () => {
     isLoading.value = false
   }
 }
-onMounted(loadDepartments)
+
+const { start } = useTimeoutFn(async () => {
+  await loadDepartments()
+  start?.()
+}, 60000)
+
+onMounted(async () => {
+  if (!departmentsRatings.value) {
+    await loadDepartments()
+    start?.()
+  }
+})
 </script>
