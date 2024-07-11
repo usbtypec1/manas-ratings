@@ -25,6 +25,11 @@
   />
   <ProgressSpinner style="margin-top: 2rem" v-if="isLoading"/>
 
+  <p v-if="!isLoading">
+    Если вы не хотите чтобы ваша фотография была в этом списке,
+    напишите в наш <a href="https://t.me/studmanas" target="_blank">телеграм-чат</a>
+  </p>
+
 </template>
 
 <script setup>

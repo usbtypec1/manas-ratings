@@ -15,20 +15,22 @@
       header="Фото"
     >
       <template #body="slotProps">
-        <Image
-          v-show="isPhotosShown"
-          :src="buildApplicantPhotoUrl(slotProps.data.applicantId)"
-          width="100"
-          preview
-        />
-        <Button
-          v-show="!isPhotosShown"
-          label="Показать"
-          outlined
-          rounded
-          severity="help"
-          @click="onShowPhotos"
-        />
+        <template v-if="isAllowedToShowPhoto(slotProps.data.applicantId)">
+          <Image
+            v-show="isPhotosShown"
+            :src="buildApplicantPhotoUrl(slotProps.data.applicantId)"
+            width="100"
+            preview
+          />
+          <Button
+            v-show="!isPhotosShown"
+            label="Показать"
+            outlined
+            rounded
+            severity="help"
+            @click="onShowPhotos"
+          />
+        </template>
       </template>
     </Column>
 
@@ -56,7 +58,7 @@
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Image from 'primevue/image'
-import { buildApplicantPhotoUrl } from '../services/photos.js'
+import { buildApplicantPhotoUrl, PHOTOS_BLACKLIST_APPLICATION_NUMBERS } from '../services/photos.js'
 import Button from 'primevue/button'
 import { ref } from 'vue'
 import { useConfirm } from 'primevue/useconfirm'
@@ -83,6 +85,8 @@ const onShowPhotos = () => {
 }
 
 const isPhotosShown = ref(false)
+
+const isAllowedToShowPhoto = applicantId => !PHOTOS_BLACKLIST_APPLICATION_NUMBERS.includes(applicantId)
 
 defineProps({
   facultyName: {

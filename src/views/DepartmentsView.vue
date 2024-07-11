@@ -21,11 +21,8 @@
 <script setup>
 import facultiesDepartments from '../facultiesDepartments.json'
 import { RouterLink } from 'vue-router'
-import Button from 'primevue/button'
 import { getAllDepartmentsRatings } from '../services/api/all-departments-ratings.js'
-import { computed, onMounted, ref } from 'vue'
-import Card from 'primevue/card'
-import Fieldset from 'primevue/fieldset'
+import { onMounted, ref } from 'vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 
