@@ -1,4 +1,7 @@
 <template>
+  <h2>Улучшенный (неофициальный) рейтинг абитуриентов университета Манас</h2>
+  <h3>Наш чат в Telegram - <a href="https://t.me/studmanas" target="_blank">@studmanas</a></h3>
+  <h3>Разработчик - <a href="https://github.com/usbtypec1" target="_blank">@usbtypec</a></h3>
   <DataTable
     v-for="{ facultyName, departments } in data"
     v-if="!isLoading"
